@@ -63,7 +63,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(PythonLibDir);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -71,7 +71,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>.\tool_python.def</ModuleDefinitionFile>
-      <AdditionalDependencies>$(CoreLibraryDependencies);Shlwapi.lib;%(AdditionalDependencies);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\libs\python314.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);Shlwapi.lib;%(AdditionalDependencies);python314.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PythonLibDir);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -82,7 +83,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(PythonLibDir);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -90,7 +91,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>.\tool_python.def</ModuleDefinitionFile>
-      <AdditionalDependencies>$(CoreLibraryDependencies);Shlwapi.lib;%(AdditionalDependencies);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\libs\python314.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);Shlwapi.lib;%(AdditionalDependencies);python314.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PythonLibDir);$(LOCALAPPDATA)\Python\pythoncore-3.14-32\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
