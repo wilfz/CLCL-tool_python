@@ -68,5 +68,9 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: |
+        echo PythonIncludeDir="${{ env.pythonLocation }}\include"
+        echo PythonLibDir="${{ env.pythonLocation }}\libs"
+        ls -l "${{ env.pythonLocation }}\include\Python.h"
+        ls -l "${{ env.pythonLocation }}\libs\python314.lib"
         msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:PythonIncludeDir="${{ env.pythonLocation }}\include" /p:PythonLibDir="${{ env.pythonLocation }}\libs" ${{env.SOLUTION_FILE_PATH}}
 
