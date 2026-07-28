@@ -28,17 +28,43 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
+    # 1. Install Full Python 3.14 x86 (Provides Include headers & libs for compiler)
+    - name: Setup Full Python 3.14 Environment
+      uses: actions/setup-python@v5
+      id: setup-python
+      with:
+        python-version: '3.14'
+        architecture: 'x86'
+
+    # 2. Download corresponding 32-bit Embeddable package for staging the release
+    - name: Download Python 3.14 Embeddable Package
+      shell: powershell
+      run: |
+        $pythonFullVersion = "${{ steps.setup-python.outputs.python-version }}"
+        $url = "https://python.org"
+        $outputDir = "$env:GITHUB_WORKSPACE\build\python_embed"
+        
+        New-Item -ItemType Directory -Force -Path $outputDir
+        Write-Host "Downloading matching Python $pythonFullVersion embeddable zip (x86)..."
+        Invoke-WebRequest -Uri $url -OutFile "python_embed.zip"
+        
+        Write-Host "Extracting package..."
+        Expand-Archive -Path "python_embed.zip" -DestinationPath $outputDir -Force
+        Remove-Item "python_embed.zip"
+
+    # 3. Add MSBuild to the runner environment
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
-    - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
-
-    - name: Build
+    # 4. Compile the Win32 project targeting x86/Win32
+    # Injects the dynamic environment paths from actions/setup-python into MSBuild
+    - name: Build Visual Studio Solution (x86)
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+      run: |
+        msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=Win32 /p:PythonIncludeDir="${{ env.pythonLocation }}\include" /p:PythonLibDir="${{ env.pythonLocation }}\libs" ${{env.SOLUTION_FILE_PATH}}
+
