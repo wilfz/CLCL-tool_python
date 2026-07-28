@@ -40,20 +40,18 @@ jobs:
         architecture: 'x86'
 
     # 2. Download corresponding 32-bit Embeddable package for staging the release
-    - name: Download Python 3.14 Embeddable Package
-      shell: powershell
+    - name: Download and Extract Python 3.14 Embeddable Package
+      shell: cmd
       run: |
-        $pythonFullVersion = "${{ steps.setup-python.outputs.python-version }}"
-        $url = "https://python.org"
-        $outputDir = "$env:GITHUB_WORKSPACE\build\python_embed"
+        mkdir build\python_embed
         
-        New-Item -ItemType Directory -Force -Path $outputDir
-        Write-Host "Downloading matching Python $pythonFullVersion embeddable zip (x86)..."
-        Invoke-WebRequest -Uri $url -OutFile "python_embed.zip"
+        :: Fetch the highest stable point-release URL directly via curl
+        curl -L "https://python.org" -o python_embed.zip
         
-        Write-Host "Extracting package..."
-        Expand-Archive -Path "python_embed.zip" -DestinationPath $outputDir -Force
-        Remove-Item "python_embed.zip"
+        :: Extract the zip natively using bsdtar (pre-installed on Windows Server)
+        tar -xf python_embed.zip -C build\python_embed
+        
+        del python_embed.zip
 
     # 3. Add MSBuild to the runner environment
     - name: Add MSBuild to PATH
