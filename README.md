@@ -13,7 +13,7 @@ Python on Windows systems allows for several versions side by side as subfolders
  
 Install the necessary version with
 ```cmd
-pymanager isntall 3.14-32
+pymanager install 3.14-32
 ```
 
 ## Install tool_python

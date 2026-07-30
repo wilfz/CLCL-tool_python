@@ -45,6 +45,7 @@ static BOOL dll_initialize(void);
 static BOOL dll_uninitialize(void);
 
 static int run_python(DATA_INFO* di, const TCHAR* str_script, const TCHAR* str_func);
+static int exec_python0(const TCHAR* str_script, const TCHAR* str_func);
 static void fill_python_functions(wndcombobox& cb, const wstring module_name);
 static BOOL CALLBACK dlg_python0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -242,38 +243,53 @@ __declspec(dllexport) int CALLBACK cb_python0(const HWND hWnd, TOOL_EXEC_INFO* t
 		if (pos != wstring::npos) {
 			mod = mod_func.substr(0, pos);
 			func = mod_func.substr(pos + 1);
-			if (func.empty()) {
-				func = TEXT("main");
-			}
 		} 
 		else {
 			mod = mod_func;
-			func = TEXT("main");
+			func.clear();
 		}
-	} 
-	else {
-		mod = TEXT("sc2");
-		func = TEXT("main");
 	}
 
+	// If module name or function name is not given, 
+	// show dialog and get them from there.
+	while (mod.empty() || func.empty()) {
+		// Initialize dlg variables
+		edit_module_name = mod;
+		edit_function_name = func;
+
+		// Show dialog 
+		if (DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_PYTHON0), GetForegroundWindow(), dlg_python0, (LPARAM)0) == FALSE)
+			return TOOL_CANCEL;
+
+		// Copy the obtained dlg variables back to local variables
+		mod = edit_module_name;
+		func = edit_function_name;
+
+		// Reset the dlg variables
+		edit_module_name.clear();
+		edit_function_name.clear();
+	}
+
+	// Now mod and func are set, but maybe not valid.
 	DATA_INFO* di = nullptr;
 	int ret = TOOL_SUCCEED;
 
-	for (; tdi != NULL; tdi = tdi->next) {
+	if (tdi == nullptr) {
+		ret = exec_python0(mod.c_str(), func.c_str());
+		return ret;
+	}
+
+	for (; tdi != nullptr; tdi = tdi->next) {
 		if (SendMessage(hWnd, WM_ITEM_CHECK, 0, (LPARAM)tdi->di) == -1) {
 			continue;
 		}
 
-#ifdef UNICODE
 		di = (DATA_INFO*)SendMessage(hWnd, WM_ITEM_GET_FORMAT_TO_ITEM, (WPARAM)TEXT("UNICODE TEXT"), (LPARAM)tdi->di);
-#else
-		di = (DATA_INFO*)SendMessage(hWnd, WM_ITEM_GET_FORMAT_TO_ITEM, (WPARAM)TEXT("TEXT"), (LPARAM)tdi->di);
-#endif
+
 		if (di != NULL && di->data != NULL) {
 			ret |= run_python(di, mod.c_str(), func.c_str());
 		}
 	}
-
 
 	return ret;
 }
@@ -358,11 +374,17 @@ static int run_python(DATA_INFO* di, const TCHAR* str_script, const TCHAR* str_f
 	// pValue is now owned by pArgs, so we must not DECREF it separately
 	Py_XDECREF(pFunc);
 	Py_XDECREF(pModule);
+	Py_ssize_t resultLen = 0;
 	if (pResult != NULL) {
-		Py_ssize_t resultLen = 0;
-		if (PyUnicode_Check(pResult))
+		if (PyUnicode_Check(pResult)) {
 			data_out = PyUnicode_AsWideCharString(pResult, &resultLen);
-		Py_DECREF(pResult);
+			Py_DECREF(pResult);
+		}
+		else {
+			GlobalUnlock(di->data);
+			Py_XDECREF(pResult);
+			return TOOL_SUCCEED;
+		}
 	}
 
 	if (data_out == nullptr) {
@@ -403,6 +425,52 @@ static int run_python(DATA_INFO* di, const TCHAR* str_script, const TCHAR* str_f
 	di->size = sizeof(TCHAR) * size;
 
 	return TOOL_DATA_MODIFIED;
+}
+
+/*
+ *  execute the python script without parameters and without changing di.
+ */
+int exec_python0(const TCHAR* str_script, const TCHAR* str_func)
+{
+	PyObject* runscriptobj = PyUnicode_FromWideChar(str_script, -1);
+
+	if (runscriptobj == NULL) {
+		return TOOL_ERROR;
+	}
+
+	PyObject* pModule = PyImport_Import(runscriptobj);
+	if (pModule == NULL) {
+		Py_DECREF(runscriptobj);
+		return TOOL_ERROR;
+	}
+
+	Py_DECREF(runscriptobj);
+
+	wstring func_name;
+	func_name.assign(str_func);
+	PyObject* pFunc = PyObject_GetAttrString(pModule, utf16_to_utf8(func_name).c_str());
+	// pFunc is a new reference 
+
+	if (pFunc == nullptr || !PyCallable_Check(pFunc)) {
+		Py_XDECREF(pFunc);
+		Py_DECREF(pModule);
+		return TOOL_ERROR;
+	}
+
+	// set the one and only function parameter
+	PyObject* pArgs = PyTuple_New(0);
+
+	// python 実行
+	// execute python
+	PyObject* pResult = PyObject_CallObject(pFunc, pArgs);
+	Py_XDECREF(pArgs);
+	Py_XDECREF(pFunc);
+	Py_XDECREF(pModule);
+	if (pResult != NULL) {
+		Py_DECREF(pResult);
+	}
+
+	return TOOL_SUCCEED;
 }
 
 static bool init_python0(HWND hDlg, const TOOL_EXEC_INFO* tei = nullptr)
