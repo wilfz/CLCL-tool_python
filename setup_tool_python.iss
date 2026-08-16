@@ -42,6 +42,9 @@ Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 [Files]
 Source: "Release\tool_python.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "python314.*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "python_scripts\example.py"; DestDir: "{app}"; Flags: onlyifdoesntexist uninsneveruninstall
+Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "PYTHON_LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-win32.zip"; DestDir: "{app}\python314"; DestName: "python_embed_win32.zip"; ExternalSize: "11534336"; Flags: ignoreversion external download extractarchive recursesubdirs createallsubdirs
 
 [Code]

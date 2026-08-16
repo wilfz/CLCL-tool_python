@@ -1,26 +1,27 @@
 # Python plugin for CLCL clipboard manager
+
+## Write your own plugin for CLCL with Python
 One of the main advantages of CLCL over other other clipboard managers ist the feature to include plugins to extend CLCL's functions. 
 But the plugin architecture is based on C, and even for experienced C it is a tedious work to write a new plugin.  
 Python on the other hand is an easy-to-learn programming language.  
 Most CLCL plugins are text-based: 
-A text selection within an editor window is copied to the clipboard, the copied text is somehow processed/modified and the result overwrites the selected text in the editor.  
-tool_python intends to enable users of CLCL to write such plugin in python and configure them.
+- A text selection within an editor window is copied to the clipboard, 
+- the copied text is somehow processed/modified and copied back to the clipboard,
+- the result overwrites the selected text in the editor.  
  
-## Build the plugin
-CLCL's plugin tool_python.dll can be built with the current version Python 3.14.5 (32-bit).
-In order to build it, you need to have the python C header files and binary libraries at the appropriate places.  
-Python on Windows systems allows for several versions side by side as subfolders of `%LOCALAPPDATA%\python`.  
- 
-Install the necessary version with
-```cmd
-pymanager install 3.14-32
-```
+__tool_python__ enables users of CLCL to write such plugin in python and configure them.
 
 ## Install tool_python
-- Unpack `tool_python.zip` into the same folder as `clcl.exe` (Default is C:\Program Files (x86)\clcl).  
-- Download [Windows embeddable package (32-bit)](https://www.python.org/ftp/python/3.14.5/python-3.14.5-embed-win32.zip).
-- Create a subfolder `python314` and unpack the zip file into that folder. _Don't_ create a sub-subfolder python-3.14.5-embed-win32 when unpacking!
-- Copy `python3.dll` and `python314.dll` from the subfolder python314 into the folder of `clcl.exe`.  
+You have two possibilities to install:
+- Setup program:
+	- Download [setup_tool_python.exe](https://www.linguversa.de/clcl/download/setup_tool_python.exe) and start it. As target path choose the same folder where your clcl.exe resides.  
+	The installer needs permission to download the Python embeddable package from www.python.org.
+- Manual install:
+	- Download and unpack [tool_python.zip](https://www.linguversa.de/clcl/download/tool_python.zip) into the same folder as `clcl.exe` (Default is `C:\Program Files (x86)\clcl`).  
+	- Download [Windows embeddable package (32-bit)](https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-win32.zip).
+	- Create a subfolder `python314` and unpack the zip file into that folder.  
+	_Don't_ create a sub-subfolder python-3.14.5-embed-win32 when unpacking!
+	- Copy `python3.dll` and `python314.dll` from the subfolder python314 into the folder of `clcl.exe`.  
 
 That's it. Now you are ready to write and configure plugin functions in python.
 
@@ -60,3 +61,18 @@ To configure these functions as tools in CLCL
 - when finished click _OK_ in the Options dialog  
 
 Now CLCL is ready with all the new Python functions.  
+
+## Build the plugin
+CLCL's plugin tool_python.dll can be built with the current version Python 3.14.* (32-bit).
+In order to build it, you need to have the python C header files and binary libraries at the appropriate places.  
+Python on Windows systems allows for several versions side by side as subfolders of `%LOCALAPPDATA%\python`.  
+ 
+Install the necessary version with
+```cmd
+pymanager install 3.14-32
+```
+## License
+
+This project is licensed under the MIT License - see `LICENSE.txt`
+
+Python (embedded package) is licensed under the Python Software Foundation License - see `PYTHON_LICENSE.txt`
