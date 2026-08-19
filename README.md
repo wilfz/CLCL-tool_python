@@ -2,7 +2,7 @@
 
 ## Write your own plugin for CLCL with Python
 One of the main advantages of CLCL over other other clipboard managers ist the feature to include plugins to extend CLCL's functions. 
-But the plugin architecture is based on C, and even for experienced C it is a tedious work to write a new plugin.  
+But the plugin architecture is based on C, and even for experienced C developers it is a tedious work to write a new plugin.  
 Python on the other hand is an easy-to-learn programming language.  
 Most CLCL plugins are text-based: 
 - A text selection within an editor window is copied to the clipboard, 
@@ -10,6 +10,23 @@ Most CLCL plugins are text-based:
 - the result overwrites the selected text in the editor.  
  
 __tool_python__ enables users of CLCL to write such plugin in python and configure them.
+
+tool_python comes with an example module _example.py_:
+```python
+#Python plugin functions must take string as 
+#input parameter and return a string:
+
+def main(input_text: str = ""):
+    ret = "Hello Python!"
+    return ret # return to CLCL
+
+def ToLower(s: str = ""):
+    return s.lower()
+
+def ToUpper(s: str = ""):
+    return s.upper()
+```
+These functions are not very fancy, but will give you the idea.
 
 ## Install tool_python
 You have two possibilities to install:
@@ -26,41 +43,28 @@ You have two possibilities to install:
 That's it. Now you are ready to write and configure plugin functions in python.
 
 ## Configure python plugins
-tool_python comes with an example module _tools.py_:
-```python
-# Python plugin functions must take string as 
-# input parameter and return a string:
-
-def main(input_text: str = ""):
-    ret = "Hello Python!"
-    return ret # return to CLCL
-
-def ToLower(s: str = ""):
-    return s.lower()
-
-def ToUpper(s: str = ""):
-    return s.upper()
-```
-These functions are not very fancy, but will give you the idea.
-
 To configure these functions as tools in CLCL
 - open the _Options_ window
 - activate the _Tools_ tab
 - click on the button _Add_
 - in the new opened dialog click on _Browse_ 
 - navigate to your folder and select `tool_python.dll`
-- chose the one and only function cb_python0
+- choose the one and only function cb_python0
 - you should change the title to something meaningful, e.g. "Convert to UPPERCASE".
 - click on OK
 - scroll to the bottom of the plugin list and select your newly created plugin function
 - now click on the _Properties_ button
-- in the dialog "Select Python Module and Function" click on _Browse_ and select your python module, e.g. sc2 (the module must be in the same folder as `tool_python.dll` or CLCL's ini folder %LOCALAPPDATA%\clcl.
-- select one of the modules functions from the combo box, e.g. "ToUpper" (function must have exactly one parameter of type `str` and result of type `str`
+- in the dialog "Select Python Module and Function" click on _Browse_ and select your python module, e.g. _example_ (the module must be in the same folder as `tool_python.dll` or in CLCL's ini folder `%LOCALAPPDATA%\clcl`.
+- select one of the modules functions from the combo box, e.g. "ToUpper" (function must have exactly one parameter of type `str` and result of type `str`)
 - click button _OK_
+- _Command line_ now contains the module name and the function name, separated by a ":"
 - in the _Tools_ tab of the _Options_ you can continue to add more Python functions
 - when finished click _OK_ in the Options dialog  
 
-Now CLCL is ready with all the new Python functions.  
+Now CLCL is ready with your new Python tool functions.  
+
+A completely configured function should look similiar to this:
+![example:ToUpper](img/ToUpper.png)
 
 ## Build the plugin
 CLCL's plugin tool_python.dll can be built with the current version Python 3.14.* (32-bit).
@@ -71,8 +75,8 @@ Install the necessary version with
 ```cmd
 pymanager install 3.14-32
 ```
-## License
 
+## License
 This project is licensed under the MIT License - see `LICENSE.txt`
 
 Python (embedded package) is licensed under the Python Software Foundation License - see `PYTHON_LICENSE.txt`

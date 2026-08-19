@@ -2,10 +2,12 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 ; Non-commercial use only
 
-#define MyAppName "Python Tool for CLCL Clipboard manager"
+#define MyAppName "CLCL Python Tool-Plugin"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "Wilf Zimmermann"
 #define MyAppURL "https://www.linguversa.de/"
+
+#define ToolPythonGitHubRepo "https://github.com/wilfz/CLCL-tool_python" 
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -45,7 +47,12 @@ Source: "python314.*"; DestDir: "{app}"; Flags: ignoreversion
 Source: "python_scripts\example.py"; DestDir: "{app}"; Flags: onlyifdoesntexist uninsneveruninstall
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "PYTHON_LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "documentation\tool_python.chm"; DestDir: "{app}"; Flags: ignoreversion
 Source: "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-win32.zip"; DestDir: "{app}\python314"; DestName: "python_embed_win32.zip"; ExternalSize: "11534336"; Flags: ignoreversion external download extractarchive recursesubdirs createallsubdirs
+
+[Icons]
+Name: "{group}\Tool_Python Help"; Filename: "{app}\tool_python.chm";
+Name: "{group}\Tool_Python on GitHub"; Filename: "{#ToolPythonGitHubRepo}"; 
 
 [Code]
 procedure ExtractAndCopyPython;
