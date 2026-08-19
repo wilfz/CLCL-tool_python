@@ -133,6 +133,7 @@ jobs:
         cp README.md Setup/ 
         cp LICENSE.txt Setup/ 
         cp PYTHON_LICENSE.txt Setup/ 
+        cp documentation/tool_python.chm Setup/ 
 
     # 8. publish zip for manual installation
     - name: Publish DLL and readme.txt
@@ -150,6 +151,7 @@ jobs:
           Setup/*.md
           Setup/*.txt
           Setup/*.html
+          Setup/*.chm
 
         # The desired behavior if no files are found using the provided path.
         # Available Options:
